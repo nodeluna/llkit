@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: llkit - lunaland kit
+Description: a gui toolkit for wayland
+Version: 0.1
+Libs: -lllkit
+Cflags: -I${includedir}
