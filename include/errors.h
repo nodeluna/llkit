@@ -8,10 +8,10 @@
 #define LLKIT_ERR 1
 
 struct llkit_err {
-	bool err = false;
-	std::string msg;
-	int code = 0;
-} ;
+		bool	    err = false;
+		std::string msg;
+		int	    code = 0;
+};
 
 namespace llkit {
 	struct llkit_err set_error(const bool& is_err, const std::string_view& msg, const int& code);

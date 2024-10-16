@@ -7,4 +7,4 @@ Name: llkit - lunaland kit
 Description: a gui toolkit for wayland
 Version: 0.1
 Libs: -lllkit
-Cflags: -I${includedir}
+Cflags: -I${includedir}/llkit

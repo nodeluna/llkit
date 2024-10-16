@@ -1,6 +1,6 @@
 CC = g++
 STD = -std=c++23
-CFLAGS = -O1 -Iinclude -Wall -Wextra -pedantic $(STD) -MMD -MP
+CFLAGS = -O1 -Iinclude -Wall -Wextra -pedantic $(STD) -MMD -MP -g
 LIBS = $(shell pkg-config --cflags --libs wayland-client)
 NAME = llkit
 TARGET = libllkit.so
@@ -9,35 +9,40 @@ BUILD_DIR = build
 INCLUDE_DIR = include
 LIB_SRCS := $(shell find src -name "*.cpp")
 LIB_OBJS := $(patsubst src/%.cpp, build/%.o, $(LIB_SRCS))
+LIB_HEADERS := $(shell find include -name "*.h")
 BUILD_DIRS = $(dir $(LIB_OBJS))
 BUILD_DIRS += build/protocols
 USR_LIB := $(shell pkgconf --variable=libdir wayland-client)
 USR_INCLUDE := $(shell pkgconf --variable=includedir wayland-client)
 DEP := $(LIB_OBJS:.o=.d)
 
-WL_PROTOCOLS_DIR = protocols
+WL_PROTOCOLS_DIR = $(INCLUDE_DIR)/protocols
 WL_DIR = $(shell pkgconf --variable=pkgdatadir wayland-protocols)
-WL_FILES := 
+WL_FILES := stable/xdg-shell/xdg-shell.xml
 
 WL_BUILD_DIR = build/protocols
-WL_OBJS := $(patsubst %.xml, $(WL_BUILD_DIR)/%.o, $(notdir $(WL_FILES)))
+WL_OBJS := $(patsubst %.xml, $(WL_BUILD_DIR)/%-client.o, $(notdir $(WL_FILES)))
+WL_HEADERS := $(patsubst %.xml, $(WL_BUILD_DIR)/%-client.h, $(notdir $(WL_FILES)))
 
-all: mkdir_build gen_wayland_files $(WL_OBJS) $(TARGET)
+all: 
+	$(MAKE) mkdir_build
+	$(MAKE) gen_wayland_files
+	$(MAKE) $(WL_OBJS) $(TARGET)
 
 -include $(DEP)
 
-gen_wayland_files:
+gen_wayland_files: mkdir_build
 	$(info :: generating wayland files)
 	@for i in $(WL_FILES); do\
 		j=$$(basename -s .xml $$i);\
 		echo :::: $$i;\
-		wayland-scanner client-header $(WL_DIR)/$$i $(WL_PROTOCOLS_DIR)/$$j.h;\
-		wayland-scanner private-code $(WL_DIR)/$$i $(WL_PROTOCOLS_DIR)/$$j.c;\
+		wayland-scanner client-header $(WL_DIR)/$$i $(WL_PROTOCOLS_DIR)/$$j-client.h;\
+		wayland-scanner private-code $(WL_DIR)/$$i $(WL_PROTOCOLS_DIR)/$$j-client.c;\
 	done
 
-build/protocols/%.o : protocols/%.c | mkdir_build
+build/protocols/%.o : include/protocols/%.c
 	$(info :: building wayland files)
-	gcc -MMD -MP -O1 -c $< -o $@
+	cc -MMD -MP -O1 -c $< -o $@
 
 
 build/%.o : src/%.cpp | mkdir_build
@@ -90,7 +95,7 @@ cppcheck:
 	$(info  )
 	cppcheck --cppcheck-build-dir=build --std=c++23 --check-level=exhaustive\
 		--suppress=unreadVariable --suppress=unusedFunction --suppress=missingIncludeSystem --enable=all\
-		-Iinclude $(SRC_DIR)
+		--suppress=cstyleCast -Iinclude -i$(WL_PROTOCOLS_DIR) $(SRC_DIR)
 
 format:
-	clang-format -i src/*/* include/*/*
+	clang-format -i $(LIB_SRCS) $(LIB_HEADERS)
