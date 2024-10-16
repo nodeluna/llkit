@@ -2,6 +2,7 @@
 #define LLKIT_GLOBALS_H
 
 #include <wayland-client.h>
+#include <xkbcommon/xkbcommon.h>
 #include "protocols/xdg-shell-client.h"
 #include "core/display.h"
 #include "errors.h"
@@ -18,6 +19,9 @@ namespace llkit {
 				struct wl_keyboard*   keyboard	  = nullptr;
 				struct wl_pointer*    pointer	  = nullptr;
 				struct wl_touch*      touch	  = nullptr;
+				struct xkb_state*     xkb_state	  = nullptr;
+				struct xkb_context*   xkb_context = nullptr;
+				struct xkb_keymap*    xkb_keymap  = nullptr;
 		};
 	}
 }

@@ -1,7 +1,8 @@
 CC = g++
 STD = -std=c++23
-CFLAGS = -O1 -Iinclude -Wall -Wextra -pedantic $(STD) -MMD -MP -g
-LIBS = $(shell pkg-config --cflags --libs wayland-client)
+CFLAGS = -O1 -Iinclude -Wall -Wextra -pedantic $(STD) -MMD -MP
+LIBS = $(shell pkg-config --cflags --libs wayland-client)\
+       $(shell pkg-config --cflags --libs xkbcommon)
 NAME = llkit
 TARGET = libllkit.so
 SRC_DIR = src 
@@ -31,13 +32,16 @@ all:
 
 -include $(DEP)
 
-gen_wayland_files: mkdir_build
+gen_wayland_files:
 	$(info :: generating wayland files)
 	@for i in $(WL_FILES); do\
 		j=$$(basename -s .xml $$i);\
 		echo :::: $$i;\
-		wayland-scanner client-header $(WL_DIR)/$$i $(WL_PROTOCOLS_DIR)/$$j-client.h;\
-		wayland-scanner private-code $(WL_DIR)/$$i $(WL_PROTOCOLS_DIR)/$$j-client.c;\
+		if [ ! -f "$(WL_PROTOCOLS_DIR)/$$j-client.h" ]; then\
+			wayland-scanner client-header $(WL_DIR)/$$i $(WL_PROTOCOLS_DIR)/$$j-client.h;\
+		elif [ ! -f "$(WL_PROTOCOLS_DIR)/$$j-client.c" ]; then\
+			wayland-scanner private-code $(WL_DIR)/$$i $(WL_PROTOCOLS_DIR)/$$j-client.c;\
+		fi;\
 	done
 
 build/protocols/%.o : include/protocols/%.c
@@ -45,7 +49,7 @@ build/protocols/%.o : include/protocols/%.c
 	cc -MMD -MP -O1 -c $< -o $@
 
 
-build/%.o : src/%.cpp | mkdir_build
+build/%.o : src/%.cpp
 	$(info :: building library)
 	$(CC) $(CFLAGS) $(LIBS) -fPIC -c $< -o $@
 
@@ -56,7 +60,8 @@ $(TARGET) : $(LIB_OBJS)
 install:
 	$(info :: installing)
 	install -Dm755 $(TARGET) $(USR_LIB)/$(TARGET)
-	cp -r $(INCLUDE_DIR)/ $(USR_INCLUDE)/$(NAME)
+	install -Dm755 -d $(USR_INCLUDE)/$(NAME)
+	cp -r $(INCLUDE_DIR)/* $(USR_INCLUDE)/$(NAME)
 	install -Dm755 $(NAME).pc $(USR_LIB)/pkgconfig/$(NAME).pc
 
 uninstall:
@@ -64,9 +69,17 @@ uninstall:
 	rm $(USR_LIB)/pkgconfig/$(NAME).pc
 	rm -r $(USR_INCLUDE)/$(NAME)
 
+LIB = $(shell pkg-config --cflags --libs $(NAME))
+
+test:
+	$(info :: making client)
+	$(CC) $(CFLAGS) $(LIB) tests/main.cpp
+	./a.out
+
 .PHONY: help
 .SILENT: help
 help:
+	$(info ~~ lunaland kit - a wayland gui toolkit)
 	$(info :: all)
 	$(info :: client)
 	$(info :: server)

@@ -3,6 +3,7 @@
 #include "core/registry.h"
 #include "core/display.h"
 #include "core/globals.h"
+#include "core/seat.h"
 #include "errors.h"
 
 namespace llkit {
@@ -15,6 +16,9 @@ namespace llkit {
 				    static_cast<wl_compositor*>(wl_registry_bind(registry, name, &wl_compositor_interface, version));
 			} else if (strcmp(interface, wl_shm_interface.name) == 0) {
 				globals->shm = static_cast<wl_shm*>(wl_registry_bind(registry, name, &wl_shm_interface, version));
+			} else if (strcmp(interface, wl_seat_interface.name) == 0) {
+				globals->seat = static_cast<wl_seat*>(wl_registry_bind(registry, name, &wl_seat_interface, version));
+				wl_seat_add_listener(globals->seat, &llkit::seat::wl_seat_listener, globals);
 			}
 		}
 

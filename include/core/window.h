@@ -8,6 +8,9 @@
 #include "core/registry.h"
 #include "errors.h"
 
+#define DEFAULT_DISPLAY ""
+#define WL_MAIN_LOOP_FAIL -1
+
 namespace llkit {
 	namespace window {
 		class obj {
@@ -15,6 +18,7 @@ namespace llkit {
 				explicit obj(const std::string_view& display_name);
 				~obj();
 				struct wl_display*		get_display(void);
+				std::optional<struct llkit_err> main_loop(void);
 				std::optional<struct llkit_err> error = std::nullopt;
 
 			private:

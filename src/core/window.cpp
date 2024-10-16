@@ -1,5 +1,6 @@
 #include <memory>
 #include <optional>
+#include <xkbcommon/xkbcommon.h>
 #include "core/window.h"
 #include "core/registry.h"
 #include "core/display.h"
@@ -21,6 +22,28 @@ namespace llkit {
 				error = lregistry.get()->error;
 				return;
 			}
+
+			lglobals->xkb_context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
+			if (not lglobals->xkb_context) {
+				error = llkit::set_error(true, "failed to initialize xkb_context", WL_MAIN_LOOP_FAIL);
+				return;
+			}
+
+			if (not lglobals->compositor) {
+				error = llkit::set_error(true, "failed to initialize compositor", WL_MAIN_LOOP_FAIL);
+				return;
+			}
+		}
+
+		std::optional<struct llkit_err> obj::main_loop(void) {
+			if (ldisplay.get()->get_display() == nullptr)
+				return llkit::set_error(
+				    true, "failed to initialize main loop, display isn't initialized", WL_MAIN_LOOP_FAIL);
+
+			while (wl_display_dispatch(ldisplay.get()->get_display())) {
+			}
+
+			return std::nullopt;
 		}
 
 		struct wl_display* obj::get_display(void) {
