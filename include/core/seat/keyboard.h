@@ -1,7 +1,11 @@
 #ifndef LLKIT_KEYBOARD_H
 #define LLKIT_KEYBOARD_H
 
+#include <map>
+#include <functional>
 #include <optional>
+#include <utility>
+#include <any>
 #include <wayland-client.h>
 #include <wayland-util.h>
 #include "errors.h"
@@ -33,14 +37,20 @@ namespace llkit {
 			    .repeat_info = llkit::seat::keyboard::repeat_info,
 			};
 
+			struct key_state_func {
+					uint32_t					    state;
+					std::function<void(uint32_t serial, uint32_t time)> func;
+			};
+
 			class obj {
 				public:
 					obj();
 					~obj();
-					std::optional<struct llkit_err> error = std::nullopt;
+					std::optional<struct llkit_err>			      error = std::nullopt;
+					std::unordered_multimap<xkb_keysym_t, key_state_func> keybind;
 
 				private:
-					llkit::globals::obj* globals = nullptr;
+					// struct llkit::globals::obj* globals = nullptr;
 			};
 		}
 	}
