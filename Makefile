@@ -1,6 +1,6 @@
 CC = g++
 STD = -std=c++23
-CFLAGS = -O1 -Iinclude -Wall -Wextra -pedantic $(STD) -MMD -MP
+CFLAGS = -O1 -Iinclude -Wall -Wextra -pedantic $(STD) -MMD -MP -Wno-unused-parameter
 LIBS = $(shell pkg-config --cflags --libs wayland-client)\
        $(shell pkg-config --cflags --libs xkbcommon)
 NAME = llkit
@@ -73,8 +73,8 @@ LIB = $(shell pkg-config --cflags --libs $(NAME))
 
 test:
 	$(info :: making client)
-	$(CC) $(CFLAGS) $(LIB) tests/main.cpp
-	./a.out
+	$(CC) $(CFLAGS) $(LIB) tests/main.cpp -o build/test
+	./build/test
 
 .PHONY: help
 .SILENT: help

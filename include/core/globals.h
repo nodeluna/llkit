@@ -6,6 +6,7 @@
 #include "protocols/xdg-shell-client.h"
 #include "core/display.h"
 #include "core/seat/keyboard.h"
+#include "core/seat/pointer.h"
 #include "errors.h"
 
 #define WL_GET_GLOBALS_FAIL -1
@@ -24,6 +25,7 @@ namespace llkit {
 				struct xkb_context*	    xkb_context = nullptr;
 				struct xkb_keymap*	    xkb_keymap	= nullptr;
 				llkit::seat::keyboard::obj* ll_keyboard = nullptr;
+				llkit::seat::pointer::obj*  ll_pointer	= nullptr;
 		};
 	}
 }

@@ -25,6 +25,7 @@ namespace llkit {
 				    globals->xkb_context, map_shm, XKB_KEYMAP_FORMAT_TEXT_V1, XKB_KEYMAP_COMPILE_NO_FLAGS);
 				munmap(map_shm, size);
 				close(fd);
+				map_shm = nullptr;
 
 				struct xkb_state* xkb_state = xkb_state_new(xkb_keymap);
 				if (not globals->xkb_keymap)
@@ -40,7 +41,7 @@ namespace llkit {
 			    struct wl_array* keys) {
 				struct llkit::globals::obj* globals = static_cast<llkit::globals::obj*>(data);
 
-				auto func = [&](uint32_t* key) {
+				auto func = [&](const uint32_t* key) {
 					std::array<char, 124> buffer;
 					xkb_keysym_t	      sym = xkb_state_key_get_one_sym(globals->xkb_state, *key + 8);
 					xkb_keysym_get_name(sym, buffer.data(), buffer.size());
@@ -49,7 +50,7 @@ namespace llkit {
 					// buffer has utf8 key
 				};
 
-				wl_array_loop<uint32_t*>(keys, func);
+				llkit::wl_array_loop<const uint32_t*>(keys, func);
 			}
 
 			void leave(void* data, struct wl_keyboard* wl_keyboard, uint32_t serial, struct wl_surface* wl_surface);
