@@ -25,6 +25,10 @@ WL_BUILD_DIR = build/protocols
 WL_OBJS := $(patsubst %.xml, $(WL_BUILD_DIR)/%-client.o, $(notdir $(WL_FILES)))
 WL_HEADERS := $(patsubst %.xml, $(WL_BUILD_DIR)/%-client.h, $(notdir $(WL_FILES)))
 
+ifneq ($(findstring clang++, $(CC)),)
+        CFLAGS += $(CLAGS) -D__cpp_concepts=202002L -Wno-builtin-macro-redefined -Wno-macro-redefined
+endif
+
 all: 
 	$(MAKE) mkdir_build
 	$(MAKE) gen_wayland_files
@@ -51,7 +55,7 @@ build/protocols/%.o : include/protocols/%.c
 
 build/%.o : src/%.cpp
 	$(info :: building library)
-	$(CC) $(CFLAGS) $(LIBS) -fPIC -c $< -o $@
+	$(CC) $(CFLAGS) -fPIC -c $< -o $@
 
 $(TARGET) : $(LIB_OBJS)
 	$(info :: building target)

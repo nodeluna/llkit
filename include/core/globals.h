@@ -11,6 +11,10 @@
 
 #define WL_GET_GLOBALS_FAIL -1
 
+namespace llkit::seat::touch {
+	struct obj;
+}
+
 namespace llkit {
 	namespace globals {
 		struct obj {
@@ -26,6 +30,7 @@ namespace llkit {
 				struct xkb_keymap*	    xkb_keymap	= nullptr;
 				llkit::seat::keyboard::obj* ll_keyboard = nullptr;
 				llkit::seat::pointer::obj*  ll_pointer	= nullptr;
+				llkit::seat::touch::obj*    ll_touch	= nullptr;
 		};
 	}
 }

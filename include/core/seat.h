@@ -9,6 +9,8 @@
 #include "core/seat/pointer.h"
 #include "core/seat/touch.h"
 
+namespace llkit::globals {}
+
 namespace llkit {
 	namespace seat {
 		void capabilities(void* data, struct wl_seat* wl_seat, uint32_t capabilities);
