@@ -53,7 +53,7 @@ namespace llkit {
 				llkit::wl_array_loop<const uint32_t*>(keys, func);
 			}
 
-			void leave(void* data, struct wl_keyboard* wl_keyboard, uint32_t serial, struct wl_surface* wl_surface){
+			void leave(void* data, struct wl_keyboard* wl_keyboard, uint32_t serial, struct wl_surface* wl_surface) {
 			}
 
 			void key(
@@ -79,7 +79,7 @@ namespace llkit {
 				xkb_state_update_mask(globals->xkb_state, mods_depressed, mods_latched, mods_locked, 0, 0, group);
 			}
 
-			void repeat_info(void* data, struct wl_keyboard* wl_keyboard, int32_t rate, int32_t delay){
+			void repeat_info(void* data, struct wl_keyboard* wl_keyboard, int32_t rate, int32_t delay) {
 			}
 
 		}

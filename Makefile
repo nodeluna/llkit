@@ -1,6 +1,6 @@
 CC = g++
 STD = -std=c++23
-CFLAGS = -O1 -Iinclude -Wall -Wextra -pedantic $(STD) -MMD -MP -Wno-unused-parameter
+CFLAGS = -O1 -Iinclude -Wall -Wextra -pedantic $(STD) -MMD -MP -Wno-unused-parameter -g
 LIBS = $(shell pkg-config --cflags --libs wayland-client)\
        $(shell pkg-config --cflags --libs xkbcommon)
 NAME = llkit

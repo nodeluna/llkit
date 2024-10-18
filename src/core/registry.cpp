@@ -1,8 +1,10 @@
 #include <cstring>
+#include <wayland-client-protocol.h>
 #include <wayland-client.h>
 #include "core/registry.h"
 #include "core/display.h"
 #include "core/globals.h"
+#include "core/output.h"
 #include "core/seat.h"
 #include "errors.h"
 
@@ -19,12 +21,27 @@ namespace llkit {
 			} else if (strcmp(interface, wl_seat_interface.name) == 0) {
 				globals->seat = static_cast<wl_seat*>(wl_registry_bind(registry, name, &wl_seat_interface, version));
 				wl_seat_add_listener(globals->seat, &llkit::seat::wl_seat_listener, globals);
+			} else if (strcmp(interface, wl_output_interface.name) == 0) {
+				struct llkit::output::obj* ll_output = new llkit::output::obj;
+				ll_output->output =
+				    static_cast<wl_output*>(wl_registry_bind(registry, name, &wl_output_interface, version));
+				ll_output->global_name = name;
+				ll_output->globals     = globals;
+				globals->ll_outputs.push_back(ll_output);
+				wl_output_add_listener(ll_output->output, &llkit::output::wl_output_listener, ll_output);
 			}
 		}
 
 		void global_remove(void* data, struct wl_registry* registry, uint32_t name) {
 			struct llkit::globals::obj* globals = static_cast<llkit::globals::obj*>(data);
-			// wl_shm_destroy(globals->shm);
+			for (auto itr = globals->ll_outputs.begin(); itr != globals->ll_outputs.end();) {
+				if ((*itr)->global_name == name) {
+					wl_output_release((*itr)->output);
+					delete[] (*itr);
+					itr = globals->ll_outputs.erase(itr);
+				} else
+					++itr;
+			}
 		}
 
 		obj::obj(std::shared_ptr<llkit::display::obj> display, std::shared_ptr<llkit::globals::obj> globals) {
