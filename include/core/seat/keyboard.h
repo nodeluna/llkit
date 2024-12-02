@@ -8,8 +8,13 @@
 #include <any>
 #include <wayland-client.h>
 #include <wayland-util.h>
+#include <xkbcommon/xkbcommon.h>
 #include "errors.h"
 #include "core/globals.h"
+
+namespace llkit::globals {
+	struct obj;
+}
 
 namespace llkit {
 	namespace seat {
@@ -28,31 +33,42 @@ namespace llkit {
 
 			void repeat_info(void* data, struct wl_keyboard* wl_keyboard, int32_t rate, int32_t delay);
 
-			inline struct wl_keyboard_listener wl_keyboard_listener = {
-			    .keymap	 = llkit::seat::keyboard::keymap,
-			    .enter	 = llkit::seat::keyboard::enter,
-			    .leave	 = llkit::seat::keyboard::leave,
-			    .key	 = llkit::seat::keyboard::key,
-			    .modifiers	 = llkit::seat::keyboard::modifiers,
-			    .repeat_info = llkit::seat::keyboard::repeat_info,
-			};
-
 			struct key_state_func {
 					uint32_t					    state;
 					std::function<void(uint32_t serial, uint32_t time)> func;
 			};
-
-			class obj {
-				public:
-					obj();
-					~obj();
-					std::optional<struct llkit_err>			      error = std::nullopt;
-					std::unordered_multimap<xkb_keysym_t, key_state_func> keybind;
-
-				private:
-					// struct llkit::globals::obj* globals = nullptr;
-			};
 		}
+
+		class keyboard_t {
+			protected:
+				struct wl_keyboard*	    wl_keyboard		 = nullptr;
+				struct xkb_context*	    xkb_context		 = nullptr;
+				struct xkb_state*	    xkb_state		 = nullptr;
+				struct xkb_keymap*	    xkb_keymap		 = nullptr;
+				struct wl_keyboard_listener wl_keyboard_listener = {
+				    .keymap	 = llkit::seat::keyboard::keymap,
+				    .enter	 = llkit::seat::keyboard::enter,
+				    .leave	 = llkit::seat::keyboard::leave,
+				    .key	 = llkit::seat::keyboard::key,
+				    .modifiers	 = llkit::seat::keyboard::modifiers,
+				    .repeat_info = llkit::seat::keyboard::repeat_info,
+				};
+
+			public:
+				keyboard_t();
+				void				   set_wl_keyboard(llkit::globals::obj* globals);
+				void				   release_wl_keyboard();
+				struct wl_keyboard*		   get_wl_keyboard();
+				const struct wl_keyboard_listener& get_wl_keyboard_listener();
+				struct xkb_context*		   get_xkb_context();
+				struct xkb_state*		   get_xkb_state();
+				struct xkb_keymap*		   get_xkb_keymap();
+				void				   set_xkb_context(struct xkb_context*);
+				void				   set_xkb_state(struct xkb_state*);
+				void				   set_xkb_keymap(struct xkb_keymap*);
+				// std::unordered_multimap<xkb_keysym_t, key_state_func> keybind;
+				~keyboard_t();
+		};
 	}
 }
 

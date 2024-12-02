@@ -2,12 +2,18 @@
 #define LLKIT_TOUCH_H
 
 #include <optional>
+#include <memory>
 #include <wayland-client.h>
 #include "errors.h"
 #include "core/globals.h"
+#include "core/seat.h"
 
 namespace llkit::globals {
 	struct obj;
+}
+
+namespace llkit {
+	class seat_t;
 }
 
 namespace llkit {
@@ -63,19 +69,34 @@ namespace llkit {
 					struct touch_point points[10];
 			};
 
-			class obj {
-				public:
-					obj();
-					~obj();
-					std::optional<struct llkit_err> error = std::nullopt;
-					struct touch_event		touch_event;
-
-				private:
-					// llkit::globals::obj* globals = nullptr;
-			};
-
-			struct touch_point* get_touch_point(llkit::globals::obj* globs, int32_t id);
+			struct touch_point* get_touch_point(std::shared_ptr<llkit::seat_t> ll_seat, int32_t id);
 		}
+
+		class touch_t {
+			protected:
+				struct wl_touch*	  wl_touch = nullptr;
+				struct touch::touch_event touch_event;
+
+				struct wl_touch_listener wl_touch_listener = {
+				    .down	 = llkit::seat::touch::down,
+				    .up		 = llkit::seat::touch::up,
+				    .motion	 = llkit::seat::touch::motion,
+				    .frame	 = llkit::seat::touch::frame,
+				    .cancel	 = llkit::seat::touch::cancel,
+				    .shape	 = llkit::seat::touch::shape,
+				    .orientation = llkit::seat::touch::orientation,
+				};
+
+			public:
+				touch_t();
+				struct wl_touch*		get_wl_touch();
+				const struct wl_touch_listener& get_wl_touch_listener();
+				void				set_wl_touch(llkit::globals::obj* globals);
+				void				release_wl_touch();
+				struct touch::touch_event&	get_touch_event();
+				~touch_t();
+		};
+
 	}
 }
 

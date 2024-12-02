@@ -11,6 +11,13 @@
 
 namespace llkit {
 	namespace registry {
+		struct data {
+				struct wl_registry* wl_registry = nullptr;
+				uint32_t	    name	= 0;
+				const wl_interface* interface	= nullptr;
+				uint32_t	    version	= 0;
+		};
+
 		void global(void* data, struct wl_registry* registry, uint32_t name, const char* interface, uint32_t version);
 
 		void global_remove(void* data, struct wl_registry* registry, uint32_t name);

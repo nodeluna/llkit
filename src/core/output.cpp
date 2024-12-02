@@ -1,7 +1,6 @@
 #include <wayland-client.h>
 #include "core/globals.h"
 
-
 namespace llkit {
 	namespace output {
 		void geometry(void* data, struct wl_output*, int32_t x, int32_t y, int32_t physical_width, int32_t physical_height,

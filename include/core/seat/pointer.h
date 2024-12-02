@@ -33,20 +33,6 @@ namespace llkit {
 
 			void axis_relative_direction(void* data, struct wl_pointer* wl_pointer, uint32_t axis, uint32_t direction);
 
-			inline struct wl_pointer_listener wl_pointer_listener = {
-			    .enter		     = llkit::seat::pointer::enter,
-			    .leave		     = llkit::seat::pointer::leave,
-			    .motion		     = llkit::seat::pointer::motion,
-			    .button		     = llkit::seat::pointer::button,
-			    .axis		     = llkit::seat::pointer::axis,
-			    .frame		     = llkit::seat::pointer::frame,
-			    .axis_source	     = llkit::seat::pointer::axis_source,
-			    .axis_stop		     = llkit::seat::pointer::axis_stop,
-			    .axis_discrete	     = llkit::seat::pointer::axis_discrete,
-			    .axis_value120	     = llkit::seat::pointer::axis_value120,
-			    .axis_relative_direction = llkit::seat::pointer::axis_relative_direction,
-			};
-
 			enum pointer_event_mask {
 				POINTER_EVENT_ENTER		      = 1 << 0,
 				POINTER_EVENT_LEAVE		      = 1 << 1,
@@ -77,18 +63,36 @@ namespace llkit {
 							uint32_t   relative_direction;
 					} axis[2];
 			};
-
-			class obj {
-				public:
-					obj();
-					~obj();
-					std::optional<struct llkit_err> error = std::nullopt;
-					struct pointer_event		pointer_event;
-
-				private:
-					// llkit::globals::obj* globals = nullptr;
-			};
 		}
+
+		class pointer_t {
+			protected:
+				struct wl_pointer*	      wl_pointer = nullptr;
+				struct pointer::pointer_event pointer_event;
+				struct wl_pointer_listener    wl_pointer_listener = {
+				       .enter			= llkit::seat::pointer::enter,
+				       .leave			= llkit::seat::pointer::leave,
+				       .motion			= llkit::seat::pointer::motion,
+				       .button			= llkit::seat::pointer::button,
+				       .axis			= llkit::seat::pointer::axis,
+				       .frame			= llkit::seat::pointer::frame,
+				       .axis_source		= llkit::seat::pointer::axis_source,
+				       .axis_stop		= llkit::seat::pointer::axis_stop,
+				       .axis_discrete		= llkit::seat::pointer::axis_discrete,
+				       .axis_value120		= llkit::seat::pointer::axis_value120,
+				       .axis_relative_direction = llkit::seat::pointer::axis_relative_direction,
+				   };
+
+			public:
+				pointer_t();
+				struct wl_pointer*		  get_wl_pointer();
+				const struct wl_pointer_listener& get_wl_pointer_listener();
+				struct pointer::pointer_event&	  get_pointer_event();
+				void				  set_wl_pointer(llkit::globals::obj* globals);
+				void				  release_wl_pointer(void);
+				~pointer_t();
+		};
+
 	}
 }
 

@@ -2,14 +2,19 @@ CC = g++
 STD = -std=c++23
 CFLAGS = -O1 -Iinclude -Wall -Wextra -pedantic $(STD) -MMD -MP -Wno-unused-parameter -g
 LIBS = $(shell pkg-config --cflags --libs wayland-client)\
-       $(shell pkg-config --cflags --libs xkbcommon)
+       $(shell pkg-config --cflags --libs xkbcommon)\
+       $(shell pkg-config --cflags --libs wayland-egl)\
+       $(shell pkg-config --cflags --libs gl)\
+       $(shell pkg-config --cflags --libs egl)
 NAME = llkit
 TARGET = libllkit.so
 SRC_DIR = src 
 BUILD_DIR = build
 INCLUDE_DIR = include
 LIB_SRCS := $(shell find src -name "*.cpp")
-LIB_OBJS := $(patsubst src/%.cpp, build/%.o, $(LIB_SRCS))
+PROT_SRCS := $(shell find include/protocols/ -name "*.c")
+LIB_OBJS := $(patsubst src/%.cpp, build/%.o, $(LIB_SRCS)) \
+	    $(patsubst include/protocols/%.c, build/protocols/%.o, $(PROT_SRCS))
 LIB_HEADERS := $(shell find include -name "*.h")
 BUILD_DIRS = $(dir $(LIB_OBJS))
 BUILD_DIRS += build/protocols
@@ -50,7 +55,7 @@ gen_wayland_files:
 
 build/protocols/%.o : include/protocols/%.c
 	$(info :: building wayland files)
-	cc -MMD -MP -O1 -c $< -o $@
+	cc -g -MMD -MP -O1 -c $< -o $@
 
 
 build/%.o : src/%.cpp
@@ -111,8 +116,9 @@ cppcheck:
 	$(info :: running static code analysis)
 	$(info  )
 	cppcheck --cppcheck-build-dir=build --std=c++23 --check-level=exhaustive\
-		--suppress=unreadVariable --suppress=unusedFunction --suppress=missingIncludeSystem --enable=all\
-		--suppress=cstyleCast -Iinclude -i$(WL_PROTOCOLS_DIR) $(SRC_DIR)
+		--suppress=unreadVariable --suppress=unusedFunction --suppress=constParameterCallback \
+		--suppress=missingIncludeSystem --enable=all --suppress=cstyleCast \
+		-Iinclude -i$(WL_PROTOCOLS_DIR) $(SRC_DIR)
 
 format:
 	clang-format -i $(LIB_SRCS) $(LIB_HEADERS)

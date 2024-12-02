@@ -7,35 +7,52 @@
 #include "core/seat/touch.h"
 
 namespace llkit {
+	seat_t::seat_t() {
+	}
+
+	struct wl_seat* seat_t::get_wl_seat(void) {
+		return wl_seat;
+	}
+
+	const struct wl_seat_listener& seat_t::get_wl_seat_listener(void) {
+		return wl_seat_listener;
+	}
+
+	void seat_t::set_wl_seat(struct wl_seat* wl_seat_) {
+		if (wl_seat != nullptr)
+			wl_seat_destroy(wl_seat);
+		wl_seat = wl_seat_;
+	}
+
+	seat_t::~seat_t() {
+		if (wl_seat != nullptr)
+			wl_seat_destroy(wl_seat);
+	}
+
 	namespace seat {
 		void capabilities(void* data, struct wl_seat* wl_seat, uint32_t capabilities) {
-			struct llkit::globals::obj* globals = static_cast<llkit::globals::obj*>(data);
+			struct llkit::globals::obj*    globals = static_cast<llkit::globals::obj*>(data);
+			std::shared_ptr<llkit::seat_t> ll_seat = globals->ll_seat;
 
 			bool have_pointer = capabilities & WL_SEAT_CAPABILITY_POINTER;
-			if (have_pointer && globals->pointer == nullptr) {
-				globals->pointer = wl_seat_get_pointer(wl_seat);
-				wl_pointer_add_listener(globals->pointer, &llkit::seat::pointer::wl_pointer_listener, globals);
-			} else if (not have_pointer && globals->pointer != nullptr) {
-				wl_pointer_release(globals->pointer);
-				globals->pointer = nullptr;
+			if (have_pointer && ll_seat->get_wl_pointer() == nullptr) {
+				ll_seat->set_wl_pointer(globals);
+			} else if (not have_pointer && ll_seat->get_wl_pointer() != nullptr) {
+				ll_seat->release_wl_pointer();
 			}
 
 			bool have_keyboard = capabilities & WL_SEAT_CAPABILITY_KEYBOARD;
-			if (have_keyboard && globals->seat == nullptr) {
-				globals->keyboard = wl_seat_get_keyboard(wl_seat);
-				wl_keyboard_add_listener(globals->keyboard, &llkit::seat::keyboard::wl_keyboard_listener, globals);
-			} else if (not have_keyboard && globals->keyboard != nullptr) {
-				wl_keyboard_release(globals->keyboard);
-				globals->keyboard = nullptr;
+			if (have_keyboard && ll_seat->get_wl_keyboard() == nullptr) {
+				ll_seat->set_wl_keyboard(globals);
+			} else if (not have_keyboard && ll_seat->get_wl_keyboard() != nullptr) {
+				ll_seat->release_wl_keyboard();
 			}
 
 			bool have_touch = capabilities & WL_SEAT_CAPABILITY_TOUCH;
-			if (have_touch && globals->seat == nullptr) {
-				globals->touch = wl_seat_get_touch(wl_seat);
-				wl_touch_add_listener(globals->touch, &llkit::seat::touch::wl_touch_listener, globals);
-			} else if (not have_touch && globals->touch != nullptr) {
-				wl_touch_release(globals->touch);
-				globals->touch = nullptr;
+			if (have_touch && ll_seat->get_wl_touch() == nullptr) {
+				ll_seat->set_wl_touch(globals);
+			} else if (not have_touch && ll_seat->get_wl_touch() != nullptr) {
+				ll_seat->release_wl_touch();
 			}
 		}
 

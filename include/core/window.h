@@ -10,6 +10,10 @@
 
 #define DEFAULT_DISPLAY ""
 #define WL_MAIN_LOOP_FAIL -1
+#define XDG_WM_BASE_FAIL -2
+#define XDG_WM_SURFACE_FAIL -3
+#define XDG_WM_TOPLEVEL_FAIL -4
+#define LL_EGL_FAILED_TO_INIT -5
 
 namespace llkit {
 	namespace window {
