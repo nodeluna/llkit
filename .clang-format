@@ -31,8 +31,15 @@ AllowShortEnumsOnASingleLine: false
 
 SeparateDefinitionBlocks: Always
 BreakBeforeBraces: Attach
+AlwaysBreakTemplateDeclarations: true
 
 AccessModifierOffset: 0
-IndentAccessModifiers: true
 NamespaceIndentation: All
 FixNamespaceComments: false
+
+IndentAccessModifiers: true
+IndentCaseLabels: true
+IndentExternBlock: true
+IndentGotoLabels: true
+IndentPPDirectives: AfterHash
+LambdaBodyIndentation: Signature

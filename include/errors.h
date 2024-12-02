@@ -19,14 +19,16 @@ struct llkit_err {
 };
 
 namespace llkit {
-	template<typename... args_t> void log_error(std::format_string<args_t...> fmt, args_t&&... args) {
+	template<typename... args_t>
+	void log_error(std::format_string<args_t...> fmt, args_t&&... args) {
 #ifdef PRINT_LOGS_TO_STDOUT
 		std::string output = "\x1b[1;31m-[X]" + std::format(fmt, std::forward<args_t>(args)...) + " \x1b[0m";
 		std::println("{}", output);
 #endif
 	}
 
-	template<typename... args_t> void print(std::format_string<args_t...> fmt, args_t&&... args) {
+	template<typename... args_t>
+	void print(std::format_string<args_t...> fmt, args_t&&... args) {
 #ifdef PRINT_LOGS_TO_STDOUT
 		std::println(fmt, std::forward<args_t>(args)...);
 #endif

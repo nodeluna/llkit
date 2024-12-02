@@ -122,48 +122,49 @@ namespace llkit {
 	void egl::get_last_error(void) {
 		EGLint error = eglGetError();
 		switch (error) {
-		case EGL_SUCCESS:
-			llkit::print("[egl success]");
-			break;
-		case EGL_BAD_CONFIG:
-			llkit::log_error("[egl error] bad config error");
-			break;
-		case EGL_BAD_SURFACE:
-			llkit::log_error("[egl error] bad surface error");
-			break;
-		case EGL_BAD_CONTEXT:
-			llkit::log_error("[egl error] bad context error");
-			break;
-		case EGL_BAD_CURRENT_SURFACE:
-			llkit::log_error("[egl error] bad current surface");
-			break;
-		case EGL_BAD_ATTRIBUTE:
-			llkit::log_error("[egl error] bad attribute");
-			break;
-		case EGL_BAD_DISPLAY:
-			llkit::log_error("[egl error] bad display error");
-			break;
-		case EGL_BAD_ALLOC:
-			llkit::log_error("[egl error] failed to allocate resources for the last operation");
-			break;
-		case EGL_BAD_ACCESS:
-			llkit::log_error("[egl error] egl bad access. cannot access a resource whice is bound to another thread");
-			break;
-		case EGL_NOT_INITIALIZED:
-			llkit::log_error("[egl error] egl not initialized. egl couldn't be initialized for the specified egl display");
-			break;
-		case EGL_CONTEXT_LOST:
-			llkit::log_error("[egl error] egl context lost");
-			break;
-		case EGL_BAD_MATCH:
-			llkit::log_error("[egl error] egl bad match, arguments are inconsistent");
-			break;
-		case EGL_BAD_PARAMETER:
-			llkit::log_error("[egl error] egl bad parameteres, one or more arguments are invalid");
-			break;
-		default:
-			llkit::log_error("[egl error] error");
-			break;
+			case EGL_SUCCESS:
+				llkit::print("[egl success]");
+				break;
+			case EGL_BAD_CONFIG:
+				llkit::log_error("[egl error] bad config error");
+				break;
+			case EGL_BAD_SURFACE:
+				llkit::log_error("[egl error] bad surface error");
+				break;
+			case EGL_BAD_CONTEXT:
+				llkit::log_error("[egl error] bad context error");
+				break;
+			case EGL_BAD_CURRENT_SURFACE:
+				llkit::log_error("[egl error] bad current surface");
+				break;
+			case EGL_BAD_ATTRIBUTE:
+				llkit::log_error("[egl error] bad attribute");
+				break;
+			case EGL_BAD_DISPLAY:
+				llkit::log_error("[egl error] bad display error");
+				break;
+			case EGL_BAD_ALLOC:
+				llkit::log_error("[egl error] failed to allocate resources for the last operation");
+				break;
+			case EGL_BAD_ACCESS:
+				llkit::log_error("[egl error] egl bad access. cannot access a resource whice is bound to another thread");
+				break;
+			case EGL_NOT_INITIALIZED:
+				llkit::log_error(
+				    "[egl error] egl not initialized. egl couldn't be initialized for the specified egl display");
+				break;
+			case EGL_CONTEXT_LOST:
+				llkit::log_error("[egl error] egl context lost");
+				break;
+			case EGL_BAD_MATCH:
+				llkit::log_error("[egl error] egl bad match, arguments are inconsistent");
+				break;
+			case EGL_BAD_PARAMETER:
+				llkit::log_error("[egl error] egl bad parameteres, one or more arguments are invalid");
+				break;
+			default:
+				llkit::log_error("[egl error] error");
+				break;
 		}
 	}
 
