@@ -9,6 +9,7 @@
 #include "core/seat/pointer.h"
 #include "core/output.h"
 #include "core/egl.h"
+#include "core/compositor.h"
 #include "core/seat.h"
 #include "errors.h"
 
@@ -25,14 +26,14 @@ namespace llkit {
 namespace llkit {
 	namespace globals {
 		struct obj {
-				struct wl_compositor*	       compositor     = nullptr;
-				struct wl_display*	       wl_display     = nullptr;
-				struct wl_shm*		       shm	      = nullptr;
-				struct wl_output*	       output	      = nullptr;
-				bool			       output_running = false;
-				std::shared_ptr<llkit::seat_t> ll_seat;
-				std::shared_ptr<llkit::egl>    ll_egl;
-				std::list<llkit::output::obj*> ll_outputs;
+				struct wl_display*		   wl_display	  = nullptr;
+				struct wl_shm*			   shm		  = nullptr;
+				struct wl_output*		   output	  = nullptr;
+				bool				   output_running = false;
+				std::shared_ptr<llkit::compositor> ll_compositor;
+				std::shared_ptr<llkit::seat_t>	   ll_seat;
+				std::shared_ptr<llkit::egl>	   ll_egl;
+				std::list<llkit::output::obj*>	   ll_outputs;
 		};
 	}
 }

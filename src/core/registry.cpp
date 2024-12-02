@@ -8,6 +8,7 @@
 #include "core/globals.h"
 #include "core/output.h"
 #include "core/seat.h"
+#include "core/compositor.h"
 #include "core/xdg_wm.h"
 #include "errors.h"
 
@@ -22,8 +23,17 @@ namespace llkit {
 			// llkit::print("[llkit::registry::global] global: {}", interface);
 
 			if (strcmp(interface, wl_compositor_interface.name) == 0) {
-				globals->compositor =
-				    static_cast<wl_compositor*>(wl_registry_bind(registry, name, &wl_compositor_interface, version));
+				if (not globals->ll_compositor)
+					globals->ll_compositor = std::make_shared<llkit::compositor>();
+
+				globals->ll_compositor->set_wl_compositor(
+				    static_cast<wl_compositor*>(wl_registry_bind(registry, name, &wl_compositor_interface, version)));
+			} else if (strcmp(interface, wl_subcompositor_interface.name) == 0) {
+				if (not globals->ll_compositor)
+					globals->ll_compositor = std::make_shared<llkit::compositor>();
+
+				globals->ll_compositor->set_wl_subcompositor(
+				    static_cast<wl_subcompositor*>(wl_registry_bind(registry, name, &wl_subcompositor_interface, version)));
 			} else if (strcmp(interface, wl_shm_interface.name) == 0) {
 				globals->shm = static_cast<wl_shm*>(wl_registry_bind(registry, name, &wl_shm_interface, version));
 			} else if (strcmp(interface, wl_seat_interface.name) == 0) {

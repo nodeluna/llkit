@@ -32,7 +32,7 @@ namespace llkit {
 				return;
 			}
 
-			if (not lglobals->compositor) {
+			if (not lglobals->ll_compositor->get_wl_compositor()) {
 				error = llkit::set_error(true, "failed to initialize compositor", WL_MAIN_LOOP_FAIL);
 				return;
 			}

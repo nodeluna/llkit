@@ -68,7 +68,7 @@ namespace llkit {
 		}
 
 		surface::surface(llkit::globals::obj* globals, struct xdg_wm_base* xdg_wm_base)
-		    : wl_surface(wl_compositor_create_surface(globals->compositor)) {
+		    : wl_surface(wl_compositor_create_surface(globals->ll_compositor->get_wl_compositor())) {
 			llkit::print("[llkit::xdg_wm::surface::constructor] entered function");
 			if (wl_surface == nullptr) {
 				llkit::log_error("couldn't initialize wl_surface");
