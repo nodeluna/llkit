@@ -12,7 +12,7 @@ SRC_DIR = src
 BUILD_DIR = build
 INCLUDE_DIR = include
 LIB_SRCS := $(shell find src -name "*.cpp")
-PROT_SRCS := $(shell find include/protocols/ -name "*.c")
+PROT_SRCS :=
 LIB_OBJS := $(patsubst src/%.cpp, build/%.o, $(LIB_SRCS)) \
 	    $(patsubst include/protocols/%.c, build/protocols/%.o, $(PROT_SRCS))
 LIB_HEADERS := $(shell find include -name "*.h")
@@ -48,10 +48,12 @@ gen_wayland_files:
 		echo :::: $$i;\
 		if [ ! -f "$(WL_PROTOCOLS_DIR)/$$j-client.h" ]; then\
 			wayland-scanner client-header $(WL_DIR)/$$i $(WL_PROTOCOLS_DIR)/$$j-client.h;\
-		elif [ ! -f "$(WL_PROTOCOLS_DIR)/$$j-client.c" ]; then\
+		fi;\
+		if [ ! -f "$(WL_PROTOCOLS_DIR)/$$j-client.c" ]; then\
 			wayland-scanner private-code $(WL_DIR)/$$i $(WL_PROTOCOLS_DIR)/$$j-client.c;\
 		fi;\
 	done
+	$(eval PROT_SRCS=$(shell find include/protocols/ -name "*.c"))
 
 build/protocols/%.o : include/protocols/%.c
 	$(info :: building wayland files)
