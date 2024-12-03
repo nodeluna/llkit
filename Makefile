@@ -1,11 +1,11 @@
 CC = g++
 STD = -std=c++23
 CFLAGS = -O1 -Iinclude -Wall -Wextra -pedantic $(STD) -MMD -MP -Wno-unused-parameter -g
-LIBS = $(shell pkg-config --cflags --libs wayland-client)\
-       $(shell pkg-config --cflags --libs xkbcommon)\
-       $(shell pkg-config --cflags --libs wayland-egl)\
-       $(shell pkg-config --cflags --libs gl)\
-       $(shell pkg-config --cflags --libs egl)
+LIBS = $(shell pkgconf --cflags --libs wayland-client)\
+       $(shell pkgconf --cflags --libs xkbcommon)\
+       $(shell pkgconf --cflags --libs wayland-egl)\
+       $(shell pkgconf --cflags --libs gl)\
+       $(shell pkgconf --cflags --libs egl)
 NAME = llkit
 TARGET = libllkit.so
 SRC_DIR = src 
@@ -80,7 +80,7 @@ uninstall:
 	rm $(USR_LIB)/pkgconfig/$(NAME).pc
 	rm -r $(USR_INCLUDE)/$(NAME)
 
-LIB = $(shell pkg-config --cflags --libs $(NAME))
+LIB = $(shell pkgconf --cflags --libs $(NAME))
 
 test:
 	$(info :: making client)
