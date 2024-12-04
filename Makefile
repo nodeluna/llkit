@@ -13,13 +13,12 @@ BUILD_DIR = build
 INCLUDE_DIR = include
 LIB_SRCS := $(shell find src -name "*.cpp")
 PROT_SRCS :=
+PREFIX = /usr
 LIB_OBJS := $(patsubst src/%.cpp, build/%.o, $(LIB_SRCS)) \
 	    $(patsubst include/protocols/%.c, build/protocols/%.o, $(PROT_SRCS))
 LIB_HEADERS := $(shell find include -name "*.h")
 BUILD_DIRS = $(dir $(LIB_OBJS))
 BUILD_DIRS += build/protocols
-USR_LIB := $(shell pkgconf --variable=libdir wayland-client)
-USR_INCLUDE := $(shell pkgconf --variable=includedir wayland-client)
 DEP := $(LIB_OBJS:.o=.d)
 
 WL_PROTOCOLS_DIR = $(INCLUDE_DIR)/protocols
@@ -70,15 +69,15 @@ $(TARGET) : $(LIB_OBJS)
 
 install:
 	$(info :: installing)
-	install -Dm755 $(TARGET) $(USR_LIB)/$(TARGET)
-	install -Dm755 -d $(USR_INCLUDE)/$(NAME)
-	cp -r $(INCLUDE_DIR)/* $(USR_INCLUDE)/$(NAME)
-	install -Dm755 $(NAME).pc $(USR_LIB)/pkgconfig/$(NAME).pc
+	install -Dm755 $(TARGET) $(PREFIX)/lib/$(TARGET)
+	install -Dm755 -d $(PREFIX)/include/$(NAME)
+	cp -r $(INCLUDE_DIR)/* $(PREFIX)/include/$(NAME)
+	install -Dm755 $(NAME).pc $(PREFIX)/lib/pkgconfig/$(NAME).pc
 
 uninstall:
-	rm $(USR_LIB)/$(TARGET)
-	rm $(USR_LIB)/pkgconfig/$(NAME).pc
-	rm -r $(USR_INCLUDE)/$(NAME)
+	rm $(PREFIX)/lib/$(TARGET)
+	rm $(PREFIX)/lib/pkgconfig/$(NAME).pc
+	rm -r $(PREFIX)/include/$(NAME)
 
 LIB = $(shell pkgconf --cflags --libs $(NAME))
 
