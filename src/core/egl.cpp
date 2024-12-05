@@ -170,7 +170,7 @@ namespace llkit {
 
 	egl::~egl() {
 		llkit::print("[llkig::egl::destructor] entered function");
-		if (not egl_window)
+		if (egl_window != nullptr)
 			wl_egl_window_destroy(egl_window);
 		if (egl_context != EGL_NO_CONTEXT)
 			eglDestroyContext(egl_display, egl_context);
